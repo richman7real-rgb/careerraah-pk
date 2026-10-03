@@ -1,0 +1,159 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  
+  --color-primary-50: #ecfdf5;
+  --color-primary-100: #d1fae5;
+  --color-primary-200: #a7f3d0;
+  --color-primary-300: #6ee7b7;
+  --color-primary-400: #34d399;
+  --color-primary-500: #10b981;
+  --color-primary-600: #059669;
+  --color-primary-700: #047857;
+  --color-primary-800: #065f46;
+  --color-primary-900: #064e3b;
+  
+  --color-accent-50: #f5f3ff;
+  --color-accent-100: #ede9fe;
+  --color-accent-200: #ddd6fe;
+  --color-accent-300: #c4b5fd;
+  --color-accent-400: #a78bfa;
+  --color-accent-500: #8b5cf6;
+  --color-accent-600: #7c3aed;
+  --color-accent-700: #6d28d9;
+  --color-accent-800: #5b21b6;
+  --color-accent-900: #4c1d95;
+  
+  --color-surface-dark: #0f172a;
+  --color-surface-dark-2: #1e293b;
+  --color-surface-dark-3: #334155;
+  --color-surface-light: #ffffff;
+  --color-surface-light-2: #f8fafc;
+  --color-surface-light-3: #f1f5f9;
+  
+  --color-text-dark: #f8fafc;
+  --color-text-dark-secondary: #94a3b8;
+  --color-text-light: #0f172a;
+  --color-text-light-secondary: #64748b;
+
+  --color-cat-tech: #06b6d4;
+  --color-cat-medical: #ef4444;
+  --color-cat-engineering: #f59e0b;
+  --color-cat-business: #10b981;
+  --color-cat-creative: #ec4899;
+  --color-cat-government: #3b82f6;
+  --color-cat-law: #8b5cf6;
+  --color-cat-trades: #f97316;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 3px;
+}
+
+/* Glass effect utility */
+.glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.glass-light {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Dark mode gradient backgrounds */
+.bg-gradient-dark {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+}
+
+.bg-gradient-light {
+  background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #f8fafc 100%);
+}
+
+/* CTA gradient */
+.btn-gradient {
+  background: linear-gradient(135deg, #10b981 0%, #8b5cf6 100%);
+}
+
+.btn-gradient:hover {
+  background: linear-gradient(135deg, #059669 0%, #7c3aed 100%);
+}
+
+/* Match ring gradient */
+.match-ring-gradient {
+  background: conic-gradient(from 0deg, #10b981, #8b5cf6, #10b981);
+}
+
+/* Smooth page transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.3s ease-out;
+}
+
+/* Category color utilities */
+.cat-tech { color: var(--color-cat-tech); }
+.cat-medical { color: var(--color-cat-medical); }
+.cat-engineering { color: var(--color-cat-engineering); }
+.cat-business { color: var(--color-cat-business); }
+.cat-creative { color: var(--color-cat-creative); }
+.cat-government { color: var(--color-cat-government); }
+.cat-law { color: var(--color-cat-law); }
+.cat-trades { color: var(--color-cat-trades); }
+
+.bg-cat-tech { background-color: var(--color-cat-tech); }
+.bg-cat-medical { background-color: var(--color-cat-medical); }
+.bg-cat-engineering { background-color: var(--color-cat-engineering); }
+.bg-cat-business { background-color: var(--color-cat-business); }
+.bg-cat-creative { background-color: var(--color-cat-creative); }
+.bg-cat-government { background-color: var(--color-cat-government); }
+.bg-cat-law { background-color: var(--color-cat-law); }
+.bg-cat-trades { background-color: var(--color-cat-trades); }
+
+/* Animated gradient background */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animated-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* Competition level colors */
+.level-low { color: #22c55e; }
+.level-medium { color: #eab308; }
+.level-high { color: #f97316; }
+.level-very-high { color: #ef4444; }
+
+.bg-level-low { background-color: #22c55e; }
+.bg-level-medium { background-color: #eab308; }
+.bg-level-high { background-color: #f97316; }
+.bg-level-very-high { background-color: #ef4444; }
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
