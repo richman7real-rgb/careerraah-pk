@@ -157,7 +157,20 @@
     "learningCurve": "Seekhne Ki Mushkil",
     "salary": "Shuru Ki Salary",
     "timeToReady": "Job-Ready Hone Ka Waqt",
-    "cost": "Shuru Ka Kharcha"
+    "cost": "Shuru Ka Kharcha",
+    "emailResultTitle": "Mera Result Email Karein",
+    "emailResultSubtitle": "Apne top career matches aur recommendations seedha apne email inbox mein hasil karein.",
+    "nameLabel": "Aap Ka Naam",
+    "namePlaceholder": "Apna naam darj karein",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "Apna email darj karein",
+    "sendEmailBtn": "Mera Result Email Karein",
+    "sendingEmailBtn": "Bheja ja raha hai...",
+    "emailSuccess": "Result bhej diya gaya! Apna email check karein.",
+    "emailError": "Kuch masla pesh aya, barah-e-karam dobara koshish karein",
+    "nameRequired": "Barah-e-karam apna naam darj karein",
+    "emailRequired": "Barah-e-karam apna email darj karein",
+    "emailInvalid": "Barah-e-karam durust email address darj karein"
   },
   "career": {
     "overview": "Overview",

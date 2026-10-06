@@ -2,13 +2,13 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../hooks/useThemeContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { matchCareers } from '../utils/matching';
 import careers from '../data/careers.json';
 import { 
   Trophy, Star, ArrowRight, RotateCcw, Share2, Download,
   AlertTriangle, Check, TrendingUp, Clock, DollarSign, Shield,
-  ChevronDown, ChevronUp
+  ChevronDown, ChevronUp, Mail, Send, CheckCircle2, AlertCircle, Loader2
 } from 'lucide-react';
 
 function CircularProgress({ percentage, size = 100, strokeWidth = 8, isDark }) {
@@ -161,6 +161,248 @@ function ResultCard({ result, rank, isDark, t, lang }) {
   );
 }
 
+function EmailResultForm({ top3, isDark, t, lang, competitionLevelMap }) {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState('idle'); // 'idle' | 'success' | 'error'
+  const [submitMessage, setSubmitMessage] = useState('');
+
+  const handleSendEmail = async (e) => {
+    e.preventDefault();
+
+    const newErrors = {};
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!trimmedName) {
+      newErrors.name = t('results.nameRequired');
+    }
+
+    if (!trimmedEmail) {
+      newErrors.email = t('results.emailRequired');
+    } else if (!emailRegex.test(trimmedEmail)) {
+      newErrors.email = t('results.emailInvalid');
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    setSubmitMessage('');
+
+    const currentLang = lang === 'roman-ur' ? 'roman-ur' : 'en';
+
+    const payload = {
+      name: trimmedName,
+      email: trimmedEmail,
+      language: currentLang,
+      topCareers: top3.map((r) => {
+        const fresherMin = r.career.salaryPKR?.fresher?.[0] ?? 0;
+        const fresherMax = r.career.salaryPKR?.fresher?.[1] ?? 0;
+        const careerName = r.career.name[currentLang === 'roman-ur' ? 'ru' : 'en'] || r.career.name.en;
+        const compStr = competitionLevelMap[r.career.competition?.level] || r.career.competition?.level || '';
+
+        return {
+          name: careerName,
+          matchPercent: r.score,
+          reasons: r.reasons,
+          salaryRange: `PKR ${fresherMin.toLocaleString('en-US')} - ${fresherMax.toLocaleString('en-US')} (fresher)`,
+          competition: compStr,
+        };
+      }),
+    };
+
+    try {
+      const response = await fetch('https://worldking750.app.n8n.cloud/webhook/career-result', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      let data = null;
+      try {
+        data = await response.json();
+      } catch {
+        // response might not be json
+      }
+
+      if (response.ok && data?.success === true) {
+        setSubmitStatus('success');
+        setSubmitMessage(t('results.emailSuccess'));
+        setName('');
+        setEmail('');
+      } else {
+        setSubmitStatus('error');
+        setSubmitMessage(t('results.emailError'));
+      }
+    } catch {
+      setSubmitStatus('error');
+      setSubmitMessage(t('results.emailError'));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 25 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.6, duration: 0.5 }}
+      className={`relative p-6 sm:p-8 rounded-2xl mb-12 ${
+        isDark ? 'glass' : 'glass-light shadow-lg'
+      }`}
+    >
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500/20 to-accent-500/20 border border-primary-500/30 flex items-center justify-center text-primary-400 shrink-0">
+          <Mail className="w-6 h-6 text-primary-500" />
+        </div>
+        <div>
+          <h3 className={`text-xl sm:text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            {t('results.emailResultTitle')}
+          </h3>
+          <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            {t('results.emailResultSubtitle')}
+          </p>
+        </div>
+      </div>
+
+      <AnimatePresence mode="wait">
+        {submitStatus === 'success' && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className={`p-4 rounded-xl flex items-center gap-3 mb-6 ${
+              isDark
+                ? 'bg-primary-500/15 border border-primary-500/30 text-primary-300'
+                : 'bg-primary-50 border border-primary-200 text-primary-900'
+            }`}
+          >
+            <CheckCircle2 className="w-5 h-5 text-primary-500 shrink-0" />
+            <p className="text-sm font-medium">{submitMessage}</p>
+          </motion.div>
+        )}
+
+        {submitStatus === 'error' && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className={`p-4 rounded-xl flex items-center gap-3 mb-6 ${
+              isDark
+                ? 'bg-red-500/15 border border-red-500/30 text-red-300'
+                : 'bg-red-50 border border-red-200 text-red-900'
+            }`}
+          >
+            <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
+            <p className="text-sm font-medium">{submitMessage}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <form onSubmit={handleSendEmail} noValidate className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="email-name-input"
+              className={`block text-xs font-semibold uppercase tracking-wider mb-1.5 ${
+                isDark ? 'text-gray-300' : 'text-gray-700'
+              }`}
+            >
+              {t('results.nameLabel')}
+            </label>
+            <input
+              id="email-name-input"
+              type="text"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+              }}
+              placeholder={t('results.namePlaceholder')}
+              disabled={isSubmitting}
+              className={`w-full px-4 py-3 rounded-xl border text-sm transition-colors outline-none ${
+                isDark
+                  ? 'bg-white/5 border-white/10 text-white placeholder-gray-500 focus:border-primary-500'
+                  : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-primary-500'
+              } ${errors.name ? 'border-red-500 focus:border-red-500' : ''}`}
+            />
+            {errors.name && (
+              <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                {errors.name}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="email-address-input"
+              className={`block text-xs font-semibold uppercase tracking-wider mb-1.5 ${
+                isDark ? 'text-gray-300' : 'text-gray-700'
+              }`}
+            >
+              {t('results.emailLabel')}
+            </label>
+            <input
+              id="email-address-input"
+              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
+              }}
+              placeholder={t('results.emailPlaceholder')}
+              disabled={isSubmitting}
+              className={`w-full px-4 py-3 rounded-xl border text-sm transition-colors outline-none ${
+                isDark
+                  ? 'bg-white/5 border-white/10 text-white placeholder-gray-500 focus:border-primary-500'
+                  : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-primary-500'
+              } ${errors.email ? 'border-red-500 focus:border-red-500' : ''}`}
+            />
+            {errors.email && (
+              <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                {errors.email}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="pt-2">
+          <button
+            id="email-result-submit-btn"
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl btn-gradient text-white text-sm font-semibold hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>{t('results.sendingEmailBtn')}</span>
+              </>
+            ) : (
+              <>
+                <Send className="w-4 h-4" />
+                <span>{t('results.sendEmailBtn')}</span>
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+    </motion.div>
+  );
+}
+
 export default function ResultsPage() {
   const { t, i18n } = useTranslation();
   const { isDark } = useTheme();
@@ -237,6 +479,15 @@ export default function ResultsPage() {
             <ResultCard key={result.career.id} result={result} rank={i + 1} isDark={isDark} t={t} lang={lang} />
           ))}
         </div>
+
+        {/* Email Me My Result */}
+        <EmailResultForm
+          top3={top3}
+          isDark={isDark}
+          t={t}
+          lang={lang}
+          competitionLevelMap={competitionLevelMap}
+        />
 
         {/* Compare Button */}
         <motion.div

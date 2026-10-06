@@ -157,7 +157,20 @@
     "learningCurve": "Learning Curve",
     "salary": "Starting Salary",
     "timeToReady": "Time to Job-Ready",
-    "cost": "Upfront Cost"
+    "cost": "Upfront Cost",
+    "emailResultTitle": "Email Me My Result",
+    "emailResultSubtitle": "Get your top career matches and recommendations delivered directly to your inbox.",
+    "nameLabel": "Your Name",
+    "namePlaceholder": "Enter your name",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "Enter your email",
+    "sendEmailBtn": "Email Me My Result",
+    "sendingEmailBtn": "Sending...",
+    "emailSuccess": "Result sent! Check your email.",
+    "emailError": "Something went wrong, please try again",
+    "nameRequired": "Please enter your name",
+    "emailRequired": "Please enter your email",
+    "emailInvalid": "Please enter a valid email address"
   },
   "career": {
     "overview": "Overview",
